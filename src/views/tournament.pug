@@ -1,0 +1,24 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title #{tournament_name}
+    body
+        div
+            a(href='/', title='Home') Home
+
+        if canEdit
+            div
+                a(href=`/edit/${tournament_name}`) Edit results
+
+        h1 #{tournament_name}
+        h2 Ranking:
+        ol
+            each player in ranking
+                li #{player.name}: #{player.score}
+
+        h2 Schedule (0 -> draw, 1 -> player1 win, 2 -> player2 win):
+        ul
+            each s in schedule
+                li Round: #{s.round} => #{s.player1} VS #{s.player2} (Result: #{s.result}) 
