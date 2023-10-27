@@ -11,6 +11,7 @@ import {privateRouter} from './routes/private.routes';
 import {signupRouter} from './routes/signup.routes';
 import {createTournamentRouter} from './routes/createTournament.routes';
 import {tournamentRouter} from './routes/tournament.routes';
+import {editRouter} from './routes/edit.routes';
 
 dotenv.config()
 
@@ -44,6 +45,7 @@ app.use('/private', privateRouter);
 app.use('/sign-up', signupRouter);
 app.use('/createTournament', createTournamentRouter);
 app.use('/tournament', tournamentRouter);
+app.use('/edit', editRouter);
 
 https.createServer({
     key: fs.readFileSync('server.key'),

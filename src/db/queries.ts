@@ -148,4 +148,80 @@ async function canEdit(tournament_name: string, userId: string) {
 }
 
 
-export {create_tournament, getTournaments, getRanking, getSchedule, canEdit}
+async function updateScore(tournament_name: string, round: string, player1: string, player2: string, result: string) {
+    let scoring_type = (await (
+        pool.query(`SELECT scoring_type FROM lab1.tournaments WHERE name = '${tournament_name}'`))
+        ).rows[0].scoring_type
+
+    let player1_score: number;
+    let player2_score: number;
+
+    if (scoring_type === 0) { // 3/1/0 nogomet
+        if (result === '1') {
+            player1_score = 3
+            player2_score = 0
+        } else if (result === '2') {
+            player1_score = 0
+            player2_score = 3
+        } else {
+            player1_score = 1
+            player2_score = 1
+        }
+    } else if (scoring_type === 1) { // 1/0,5/0 šah
+        if (result === '1') {
+            player1_score = 1
+            player2_score = 0
+        } else if (result === '2') {
+            player1_score = 0
+            player2_score = 1
+        } else {
+            player1_score = 0.5
+            player2_score = 0.5
+        }
+    } else { // 2/0/1 (košarka)
+        if (result === '1') {
+            player1_score = 2
+            player2_score = 1
+        } else if (result === '2') {
+            player1_score = 1
+            player2_score = 2
+        } else {
+            player1_score = 0
+            player2_score = 0
+        }
+    }
+
+    // update players with new scores
+    pool.query(`UPDATE lab1.players
+                SET player_score = (SELECT player_score
+                                    FROM lab1.players
+                                    WHERE player_name = '${player1}' AND tournament_name = '${tournament_name}') + ${player1_score}
+                WHERE player_name = '${player1}'`)
+
+    pool.query(`UPDATE lab1.players
+                SET player_score = (SELECT player_score
+                                    FROM lab1.players
+                                    WHERE player_name = '${player2}' AND tournament_name = '${tournament_name}') + ${player2_score}
+                WHERE player_name = '${player2}'`)
+
+
+    // update schedule with new results
+    pool.query(`UPDATE lab1.schedules
+                SET result = '${parseInt(result)}'
+                WHERE tournament_name = '${tournament_name}' AND
+                      round = '${round}' AND
+                      player1 = '${player1}' AND
+                      player2 = '${player2}'`)
+
+    // update schedule with new results
+    pool.query(`UPDATE lab1.schedules
+        SET result = '${parseInt(result)}'
+        WHERE tournament_name = '${tournament_name}' AND
+              round = '${round}' AND
+              player1 = '${player2}' AND
+              player2 = '${player1}'`)
+                
+}
+
+
+export {create_tournament, getTournaments, getRanking, getSchedule, canEdit, updateScore}

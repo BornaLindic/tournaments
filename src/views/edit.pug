@@ -1,0 +1,41 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Edit tournament
+    body
+        h1 Edit #{tournament_name}
+
+        form(action=`/edit/${tournament_name}`, method='POST')
+            div Round
+            select(name='round')
+                - var i = 1
+                while i <= rounds
+                    option(value=`${i}`) #{i++}
+            br
+            br
+
+            div Player 1
+            select(name='player1')
+                each player in players
+                    option(value=`${player}`) #{player}
+            br
+            br
+
+            div Player 2
+            select(name='player2')
+                each player in players
+                    option(value=`${player}`) #{player}
+            br
+            br
+
+            div Result:
+            select(name='result')
+                option(value=0) 0 (draw)
+                option(value=1) 1 (player1 win)
+                option(value=2) 2 (player2 win)
+            br
+            br
+
+            input(type='submit', value='Submit')
