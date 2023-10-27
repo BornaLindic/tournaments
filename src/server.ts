@@ -20,13 +20,15 @@ app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'pug');
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-const port = 4080;
+
+const externalUrl = process.env.RENDER_EXTERNAL_URL;
+const port = externalUrl && process.env.PORT ? parseInt(process.env.PORT) : 4080;
 
 const config = { 
   authRequired : false,
   idpLogout : true, //login not only from the app, but also from identity provider
   secret: process.env.SECRET,
-  baseURL: `https://localhost:${port}`,
+  baseURL: externalUrl || `https://localhost:${port}`,
   clientID: process.env.CLIENT_ID,
   issuerBaseURL: 'https://dev-qy38gvhp02pzbu3s.us.auth0.com',
   clientSecret: process.env.CLIENT_SECRET,
@@ -47,10 +49,19 @@ app.use('/createTournament', createTournamentRouter);
 app.use('/tournament', tournamentRouter);
 app.use('/edit', editRouter);
 
-https.createServer({
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.cert')
-  }, app)
-  .listen(port, function () {
-    console.log(`Server running at https://localhost:${port}/`);
-  });
+if (externalUrl) {
+  const hostname = '0.0.0.0'; //ne 127.0.0.1
+  app.listen(port, hostname, () => {
+    console.log(`Server locally running at http://${hostname}:${port}/ and from
+    outside on ${externalUrl}`);}
+    );
+  }
+  else {
+    https.createServer({
+      key: fs.readFileSync('server.key'),
+      cert: fs.readFileSync('server.cert')
+      }, app)
+      .listen(port, function () {
+      console.log(`Server running at https://localhost:${port}/`);
+    });
+  }
