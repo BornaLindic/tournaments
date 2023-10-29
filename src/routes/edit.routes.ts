@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get('/:tournament_name', async function (req, res) { 
     let tournament_name = req.params.tournament_name
-    let userId = req.oidc.user?.sid
+    let userId = req.oidc.user?.email
 
     if (! (await canEdit(tournament_name, userId))) {
         res.redirect(`/tournament/${tournament_name}`)
@@ -34,7 +34,7 @@ router.get('/:tournament_name', async function (req, res) {
 
 router.post('/:tournament_name', async function (req, res) { 
     let tournament_name = req.params.tournament_name
-    let userId = req.oidc.user?.sid
+    let userId = req.oidc.user?.email
 
     if (! (await canEdit(tournament_name, userId))) {
         res.redirect(`/tournament/${tournament_name}`)

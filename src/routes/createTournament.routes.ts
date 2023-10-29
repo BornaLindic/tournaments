@@ -23,7 +23,7 @@ router.post('/', requiresAuth(), function (req, res, next) {
     }
     
     create_tournament(
-        req.oidc.user?.sid,
+        req.oidc.user?.email,
         req.body.name,
         req.body.scoring_type,
         players

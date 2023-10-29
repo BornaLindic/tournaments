@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get('/:tournament_name', async function (req, res) { 
     let tournament_name = req.params.tournament_name
-    let userId = req.oidc.user?.sid
+    let userId = req.oidc.user?.email
 
     let ranking = (await getRanking(tournament_name))
     let schedule = (await getSchedule(tournament_name))
